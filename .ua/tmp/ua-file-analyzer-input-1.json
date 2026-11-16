@@ -1,0 +1,15 @@
+{
+  "projectRoot": "C:\\Users\\Hp\\Documents\\RISCV_Pong",
+  "batchFiles": [
+    {"path": "README.md", "language": "markdown", "sizeLines": 90, "fileCategory": "docs"},
+    {"path": "rars1_6.jar", "language": "jar", "sizeLines": 6599, "fileCategory": "code"},
+    {"path": "src/main.s", "language": "s", "sizeLines": 527, "fileCategory": "code"},
+    {"path": "tests/keyboardtest.s", "language": "s", "sizeLines": 28, "fileCategory": "code"}
+  ],
+  "batchImportData": {
+    "README.md": [],
+    "rars1_6.jar": [],
+    "src/main.s": [],
+    "tests/keyboardtest.s": []
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "nodes": [
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Documents the RARS Pong game, its Bitmap Display setup, keyboard MMIO controls, game rules, visual design, and troubleshooting steps.",
+      "tags": ["documentation", "rars", "setup", "game-guide"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:rars1_6.jar",
+      "type": "file",
+      "name": "rars1_6.jar",
+      "filePath": "rars1_6.jar",
+      "summary": "Bundled RARS 1.6 simulator archive used to assemble and run the RISC-V Pong program.",
+      "tags": ["simulator", "rars", "runtime"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/main.s",
+      "type": "file",
+      "name": "main.s",
+      "filePath": "src/main.s",
+      "summary": "Implements the complete two-player Pong game for RARS, including MMIO input, game state, rendering, score glyphs, and collision handling.",
+      "tags": ["risc-v", "game-loop", "bitmap-display", "mmio"],
+      "complexity": "complex",
+      "languageNotes": "Uses RARS-compatible RISC-V pseudo-instructions, saved registers for persistent game state, and memory-mapped display and keyboard addresses."
+    },
+    {
+      "id": "file:tests/keyboardtest.s",
+      "type": "file",
+      "name": "keyboardtest.s",
+      "filePath": "tests/keyboardtest.s",
+      "summary": "Standalone RARS program that polls the keyboard receiver and exits after receiving lowercase W.",
+      "tags": ["risc-v", "test", "keyboard", "mmio"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main.s:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "src/main.s",
+      "lineRange": [7, 22],
+      "summary": "Initializes framebuffer, game-state, ball, score, and previous-frame registers before entering the game loop.",
+      "tags": ["entry-point", "initialization", "game-state"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main.s:game_loop",
+      "type": "function",
+      "name": "game_loop",
+      "filePath": "src/main.s",
+      "lineRange": [24, 50],
+      "summary": "Coordinates keyboard polling, full versus incremental rendering, gameplay updates, win checks, and software frame pacing.",
+      "tags": ["game-loop", "state-machine", "rendering", "timing"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main.s:read_keyboard",
+      "type": "function",
+      "name": "read_keyboard",
+      "filePath": "src/main.s",
+      "lineRange": [53, 120],
+      "summary": "Polls RARS receiver MMIO and maps Space, P, W/S, and I/K input to start, pause, and paddle actions.",
+      "tags": ["keyboard", "mmio", "input", "state-machine"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main.s:move_paddles",
+      "type": "function",
+      "name": "move_paddles",
+      "filePath": "src/main.s",
+      "lineRange": [122, 137],
+      "summary": "Clamps both paddle top rows so the eight-cell paddles remain inside the 32-row court.",
+      "tags": ["paddles", "bounds-checking", "game-state"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main.s:move_ball",
+      "type": "function",
+      "name": "move_ball",
+      "filePath": "src/main.s",
+      "lineRange": [139, 203],
+      "summary": "Updates diagonal ball movement, wall and paddle bounces, scoring, serve resets, and redraw requests.",
+      "tags": ["ball-physics", "collision", "scoring", "game-state"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main.s:draw_frame",
+      "type": "function",
+      "name": "draw_frame",
+      "filePath": "src/main.s",
+      "lineRange": [205, 264],
+      "summary": "Performs a complete court redraw for state transitions, drawing the colored background, dashed divider, paddles, ball, scoreboard, and status text.",
+      "tags": ["rendering", "framebuffer", "scoreboard", "rars"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main.s:draw_dynamic_frame",
+      "type": "function",
+      "name": "draw_dynamic_frame",
+      "filePath": "src/main.s",
+      "lineRange": [266, 318],
+      "summary": "Redraws only previous and current moving cells during play to reduce display jitter while restoring divider dashes under the ball.",
+      "tags": ["rendering", "framebuffer", "optimization", "animation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main.s:draw_glyph",
+      "type": "function",
+      "name": "draw_glyph",
+      "filePath": "src/main.s",
+      "lineRange": [384, 417],
+      "summary": "Renders a five-by-seven black bitmap glyph at a logical framebuffer position using the glyph row table.",
+      "tags": ["rendering", "bitmap-font", "framebuffer"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main.s:draw_status",
+      "type": "function",
+      "name": "draw_status",
+      "filePath": "src/main.s",
+      "lineRange": [418, 456],
+      "summary": "Draws the ready-screen instructions or pause label according to the current game state.",
+      "tags": ["ui", "game-state", "bitmap-font"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main.s:draw_word",
+      "type": "function",
+      "name": "draw_word",
+      "filePath": "src/main.s",
+      "lineRange": [457, 486],
+      "summary": "Iterates over a glyph-index array and places evenly spaced status characters on the Bitmap Display.",
+      "tags": ["ui", "bitmap-font", "rendering"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/keyboardtest.s:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/keyboardtest.s",
+      "lineRange": [8, 28],
+      "summary": "Initializes keyboard receiver addresses, waits for lowercase W, and exits when it is received.",
+      "tags": ["test", "keyboard", "mmio"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {"source": "file:src/main.s", "target": "function:src/main.s:main", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:src/main.s", "target": "function:src/main.s:game_loop", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:src/main.s", "target": "function:src/main.s:read_keyboard", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:src/main.s", "target": "function:src/main.s:move_paddles", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:src/main.s", "target": "function:src/main.s:move_ball", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:src/main.s", "target": "function:src/main.s:draw_frame", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:src/main.s", "target": "function:src/main.s:draw_dynamic_frame", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:src/main.s", "target": "function:src/main.s:draw_glyph", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:src/main.s", "target": "function:src/main.s:draw_status", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:src/main.s", "target": "function:src/main.s:draw_word", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/keyboardtest.s", "target": "function:tests/keyboardtest.s:main", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "document:README.md", "target": "file:src/main.s", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:README.md", "target": "file:tests/keyboardtest.s", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "file:rars1_6.jar", "target": "file:src/main.s", "type": "related", "direction": "forward", "weight": 0.5}
+  ]
+}

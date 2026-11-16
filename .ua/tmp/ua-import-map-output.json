@@ -1,0 +1,15 @@
+{
+  "scriptCompleted": true,
+  "stats": {
+    "filesScanned": 4,
+    "filesWithImports": 0,
+    "totalEdges": 0
+  },
+  "failures": [],
+  "importMap": {
+    "README.md": [],
+    "rars1_6.jar": [],
+    "src/main.s": [],
+    "tests/keyboardtest.s": []
+  }
+}

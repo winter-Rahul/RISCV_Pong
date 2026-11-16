@@ -1,0 +1,46 @@
+{
+  "scriptCompleted": true,
+  "contentDigest": "bebc206d0feed02d7c5ad634d8c0156ecc3941e6d52aca67df978253f9e6bc81",
+  "files": [
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 90,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "rars1_6.jar",
+      "language": "jar",
+      "sizeLines": 6599,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main.s",
+      "language": "s",
+      "sizeLines": 527,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/keyboardtest.s",
+      "language": "s",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    }
+  ],
+  "totalFiles": 4,
+  "filteredByIgnore": 0,
+  "estimatedComplexity": "small",
+  "failures": [],
+  "stats": {
+    "filesScanned": 4,
+    "byCategory": {
+      "docs": 1,
+      "code": 3
+    },
+    "byLanguage": {
+      "markdown": 1,
+      "jar": 1,
+      "s": 2
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "RISCV_Pong",
+  "description": "A two-player Pong game implemented in RISC-V assembly for the RARS 1.6 simulator, using its Bitmap Display and Keyboard and Display MMIO Simulator.",
+  "languages": ["jar", "markdown", "s"],
+  "frameworks": [],
+  "files": [
+    {"path": "README.md", "language": "markdown", "sizeLines": 90, "fileCategory": "docs"},
+    {"path": "rars1_6.jar", "language": "jar", "sizeLines": 6599, "fileCategory": "code"},
+    {"path": "src/main.s", "language": "s", "sizeLines": 527, "fileCategory": "code"},
+    {"path": "tests/keyboardtest.s", "language": "s", "sizeLines": 28, "fileCategory": "code"}
+  ],
+  "totalFiles": 4,
+  "filteredByIgnore": 0,
+  "estimatedComplexity": "small",
+  "importMap": {
+    "README.md": [],
+    "rars1_6.jar": [],
+    "src/main.s": [],
+    "tests/keyboardtest.s": []
+  }
+}
