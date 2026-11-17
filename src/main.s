@@ -154,7 +154,7 @@ resume_game:
 pause_game:
     li s9, 2
     j request_redraw
-
+//Person 2
 increase_ball_speed:
     # Only advance a tier every second point; cap the increase at two tiers.
     add t0, s7, s8
@@ -186,7 +186,7 @@ reset_match:
     la t1, redraw_needed
     sw t0, 0(t1)
     jalr zero, 0(ra)
-
+    
 move_paddles:
     bgez s1, left_top_ok
     li s1, 0
@@ -273,7 +273,7 @@ ball_done:
     lw ra, 0(sp)
     addi sp, sp, 4
     jalr zero, 0(ra)
-
+//person 3
 draw_frame:
     addi sp, sp, -4
     sw ra, 0(sp)

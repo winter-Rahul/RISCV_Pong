@@ -1,90 +1,86 @@
 # RISC-V Pong
 
-## Project overview
+A two-player Pong game written in RISC-V assembly for the **RARS 1.6** simulator. It uses RARS's Bitmap Display for the court and Keyboard and Display MMIO Simulator for player input. It runs in the simulator; it is not configured for a physical RISC-V board.
 
-This project is a two-player Pong game written in RISC-V assembly for the RARS 1.6 simulator on a PC. It uses RARS's Bitmap Display and Keyboard and Display MMIO Simulator tools. It is a simulator-based game, not a physical ARIES board implementation.
+## What you need
 
-## Features
+- Windows, macOS, or Linux
+- Java to launch the included `rars1_6.jar`
+- The RARS Bitmap Display and Keyboard and Display MMIO Simulator tools (included in the RARS application)
 
-- Two paddles and a ball on a 64 x 32 logical playfield.
-- Left paddle controls: **W/S**. Right paddle controls: **I/K**. Both uppercase and lowercase letters are accepted; each received key moves its paddle one row during play.
-- The game opens on a ready screen. Press **Space** in the Keyboard and Display MMIO Simulator to start. Press **P** to pause or resume; a pause label appears on the court. Paddle controls are ignored until play starts and while paused.
-- The ball moves diagonally. It reverses vertical direction at the top and bottom walls and horizontal direction when it hits a paddle. A missed paddle gives the point to the other player.
-- Scores are tracked in the left and right score registers and drawn as `P1 <score>   P2 <score>` at the top of the display with a larger 5 x 7 pixel font. The ball resets to the centre after a point. The first player to five points wins; a message is printed in the RARS console and the program exits.
-- The court background is light green, the dashed center divider and scoreboard are black, the paddles are dark blue, and the ball is bright orange.
-- Ball speed is controlled by a software countdown after each frame. `li t0, 16000` sets the delay-loop count; reducing it speeds up play, while increasing it slows play. Keyboard polling happens before the delay on each frame.
+The main game source is [`src/main.s`](src/main.s). The project also includes a standalone keyboard-input example at [`tests/keyboardtest.s`](tests/keyboardtest.s); that example is not part of the Pong game. See [`TEAM_CONTRIBUTIONS.md`](TEAM_CONTRIBUTIONS.md) for a suggested three-person project split.
 
-## Requirements and project structure
+## Start the game
 
-- **RARS 1.6** on a PC.
-- RARS **Bitmap Display** and **Keyboard and Display MMIO Simulator** tools.
-- `src/main.s` contains the game loop, MMIO keyboard polling, paddle and ball movement, collisions, scoring, framebuffer drawing, scoreboard glyphs, and winner output.
-- `tests/keyboardtest.s` is a small standalone receiver-polling example. It recognizes lowercase `w` and exits; it is not the game and should be assembled/run separately.
-- `README.md` contains setup, implementation notes, and troubleshooting.
-- `rars1_6.jar` is bundled at the project root.
+1. Download or clone this repository and open its project folder.
+2. Launch RARS 1.6. For example, from a terminal in the project folder run:
 
-## Setup and execution
+   ```text
+   java -jar rars1_6.jar
+   ```
 
-1. Start RARS 1.6, open `src/main.s`, and choose **Assemble**.
-2. Open **Tools > Bitmap Display** and set:
-   - **Unit Width:** 8
-   - **Unit Height:** 8
-   - **Display Width:** 512
-   - **Display Height:** 256
-   - **Base address:** `0x10010000 (static data)`
-3. Press **Connect to Program** in Bitmap Display.
-4. Open **Tools > Keyboard and Display MMIO Simulator** and press **Connect to Program**. It must be connected to the running program for keyboard input to reach the game.
-5. Run the program. The ready screen shows **PRESS / START / SPACE**. Enter Space in the keyboard simulator's keyboard input area to start. During play, enter `w`, `s`, `i`, or `k` to move the paddles, or `p` to pause/resume (uppercase also works).
+3. In RARS, open `src/main.s` and click **Assemble**.
+4. Open **Tools > Bitmap Display** and set:
+   - **Unit Width:** 16
+   - **Unit Height:** 16
+   - **Display Width:** 1024
+   - **Display Height:** 512
+   - **Base address for display:** `0x10010000 (static data)`
+5. Click **Connect to Program** in the Bitmap Display.
+6. Open **Tools > Keyboard and Display MMIO Simulator** and click **Connect to Program**.
+7. Click **Run** in RARS. The court should show the ready screen.
+8. Click the keyboard input area in the MMIO Simulator and press **Space** to start.
 
-### Enlarge the display
+The display settings above make each of the game's 64-by-32 cells 16 screen pixels wide and high. You can use 8-by-8 units with a 512-by-256 display instead; keep the same base address and connect the display to the program.
 
-To make the game larger, increase the Bitmap Display's unit size and scale its display dimensions by the same amount. For example, use **Unit Width: 16**, **Unit Height: 16**, **Display Width: 1024**, and **Display Height: 512**. Keep the base address at `0x10010000 (static data)` and reconnect to the program. This enlarges the 64 x 32 game grid without changing the assembly. You can also maximize the Bitmap Display tool window; whether it fills the screen depends on your desktop resolution and RARS window layout.
+## Controls
 
-## Game layout and physics
+| Key | Action |
+| --- | --- |
+| `Space` | Start from the ready screen |
+| `W` / `S` | Move the left paddle up / down |
+| `I` / `K` | Move the right paddle up / down |
+| `P` | Pause or resume |
+| `Space` on the winner screen | Reset the scores and start a new match |
 
-The logical grid is 64 columns by 32 rows. A position is written `(x, y)`, where `x` is the column and `y` is the row. The ball has direction `(dx, dy)`; each component is either `+1` or `-1`, so it moves diagonally by one cell per frame. Positive `dx` moves right; positive `dy` moves down.
+Uppercase and lowercase letters are accepted. Enter these keys in the **Keyboard and Display MMIO Simulator's input area**, not in the RARS console or source editor. The game reads one key per update, so if you type several keys quickly, it may take a few frames to process them.
 
-- Left paddle: column 2. Right paddle: column 61. Both paddles are 8 cells high; their top row is clamped to 0 through 24.
-- Ball starts at `(31, 15)` with `dx = +1`, `dy = +1`.
-- At the top and bottom wall, `dy` is reversed and the ball remains within rows 0 through 31.
-- At a paddle column, a ball within the paddle's 8-row range reverses `dx`, preserving `dy`. If it misses, the opposing player scores as the ball passes that paddle.
-- After scoring, the ball returns to `(31, 15)`. The first player to 5 points wins.
+## How to play
 
-Framebuffer byte address for logical cell `(x, y)`:
+- Each paddle is eight cells tall. Move it to intercept the ball.
+- The ball bounces off the top and bottom walls.
+- A ball that reaches a paddle's column scores a hit if its row is within that paddle's span. Otherwise, the other player earns a point.
+- After a point, the ball returns to the center for the next serve.
+- The ball's pace increases gently every second point, up to a limit. It still moves one cell per game update so it does not skip over a paddle.
+- The first player to **five points** wins. A winner banner appears and the game waits for **Space**.
+- Press **Space** in the MMIO keyboard input area on the winner screen to reset both scores and start the next match. You do not need to close or relaunch RARS.
+
+## Display and game layout
+
+The logical court is 64 columns by 32 rows. The left paddle is at column 2 and the right paddle at column 61. The center divider is at column 32. The ball starts at `(31, 15)`.
+
+The Bitmap Display framebuffer uses one 32-bit word per logical cell. The address for column `x`, row `y` is:
 
 ```text
-address = 0x10010000 + 4 * (y * 64 + x)
+0x10010000 + 4 * (y * 64 + x)
 ```
 
-Each logical cell is one 32-bit pixel word. The default 8 x 8 Bitmap Display unit size scales each logical cell to 8 x 8 screen pixels, giving a 512 x 256 display. A 16 x 16 unit size gives a 1024 x 512 display while keeping the same 64 x 32 logical grid.
+The program draws a full frame when the screen needs to be refreshed (for example, on start or reset). During play it redraws only the moving ball and paddles to reduce flicker. Scoreboard and status text are rendered using a small bitmap font.
 
-## Implementation lessons learned
+## Troubleshooting
 
-- **Keyboard MMIO:** The game polls receiver control address `0xFFFF0000`; bit 0 indicates that a character is ready. It then reads the character from receiver data address `0xFFFF0004`. The source compares ASCII values for W/S/I/K in both cases. It reads at most one character each frame, so the MMIO simulator must be connected and focused for input.
-- **Bitmap memory:** A framebuffer cell is four bytes. A complete court is drawn at startup and after state changes. During normal play, the code redraws only the old/new ball and paddle cells to reduce display jitter. The display may appear blank until the program executes this drawing code; connect the tool before running or rerun after connecting.
-- **Scoreboard redraw:** Clearing all 2048 cells erases every visible pixel, including the score. `draw_frame` therefore calls `draw_scoreboard` after drawing the ball. Glyph row bytes and winner strings are placed at `0x10012000`, just after the 8192-byte framebuffer range, so the clear loop does not overwrite them.
-- **Frame pacing:** The countdown at `li t0, 16000` is a software delay, not a wall-clock timer. Its perceived speed depends on the simulator and computer. Tune that count if movement is too fast or slow; the run-speed slider is not the only control.
-- **Subroutine returns:** `draw_frame` calls other drawing routines, and `draw_scoreboard` calls `draw_glyph` repeatedly. They save and restore `ra` around nested calls so that returning from a helper does not lose the caller's return address. `draw_paddle` and `draw_glyph` are leaf routines and return directly.
+- **The display is blank:** Check the Bitmap Display base address and dimensions, connect it to the program, then run the assembled program.
+- **Keys do nothing:** Confirm the Keyboard and Display MMIO Simulator says it is connected. Click its input area before typing.
+- **The ball does not start moving:** The game waits on the ready screen until you press **Space** in the MMIO keyboard input area. Press **P** again if the pause label is showing.
+- **The next match does not start:** On the winner screen, focus the MMIO keyboard input area and press **Space**. If you have changed the source, assemble and run the updated `src/main.s` before testing.
+- **The display is too small:** Increase both unit dimensions and display dimensions by the same factor (for example, 16-by-16 units and a 1024-by-512 display). Keep the base address at `0x10010000`.
 
-## Testing and troubleshooting
+## Optional command-line assembly check
 
-### Checks completed
+From the project folder, you can ask RARS to assemble the source without opening the GUI:
 
-The user reported that the game assembled and ran in RARS 1.6, with both paddles and the ball visible and keyboard controls working. They also reported that the ball moved too slowly, which led to lowering the delay count. Collision and scoring behavior were part of the implementation but have not been independently confirmed in the conversation.
+```text
+java -jar rars1_6.jar a nc src/main.s
+```
 
-The scoreboard was added afterward. An assembly attempt reported that `.byte` and `.asciz` cannot appear in the text segment. The glyph table and winner strings were then moved to data address `0x10012000`, beyond the framebuffer. The latest font was enlarged to 5 x 7 for clearer digits. These changes have not yet been reassembled or run in RARS, so scoreboard visibility and the latest source's successful assembly still need verification. The ready screen and P pause/resume controls also need a RARS run to verify.
-
-### Troubleshooting
-
-- **Blank or black display:** Check the Bitmap Display dimensions, unit size, and base address; press **Connect to Program** before running or rerun the program after connecting. The game draws the initial image by writing framebuffer memory during execution.
-- **Keyboard does not respond:** Connect Keyboard and Display MMIO Simulator to the program that is running, focus its keyboard input area, and use W/S/I/K. The game accepts uppercase and lowercase input and reads one character per frame.
-- **Ball moves too slowly:** Lower the countdown constant `16000` before `delay_loop`; increasing it slows the game. The software delay adds a wait on every frame.
-- **Display jitters during play:** Normal gameplay now redraws only the old and new ball/paddle cells. If the display still flickers, confirm that the Bitmap Display is connected before the program starts and avoid changing its settings while the game is running.
-- **Scoreboard is invisible:** Confirm the latest source assembled, that the Bitmap Display is connected at `0x10010000`, and that `draw_frame` calls `draw_scoreboard` after the clear. The glyph table is expected at `0x10012000`, outside the framebuffer. The scoreboard fix still requires a RARS run to verify.
-- **Game seems frozen:** On the ready screen, press Space in the keyboard simulator. During play, P pauses and resumes; the screen displays `PAUSE` while paused.
-
-## Limitations and future improvements
-
-- Keyboard polling handles one character per frame; buffering or handling multiple queued inputs could make simultaneous/frequent controls smoother.
-- There is no restart flow after a winner; the program exits when a player reaches five points.
-- The game and its display/input are specific to RARS; hardware input and display support would need a separate implementation for a physical board.
+Use the GUI steps above to play; the command-line assembly check does not connect the Bitmap Display or keyboard.
